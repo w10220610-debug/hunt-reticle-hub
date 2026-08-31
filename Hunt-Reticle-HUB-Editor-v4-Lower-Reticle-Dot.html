@@ -1,0 +1,1961 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Hunt Reticle HUB Editor v3 2560x1440</title>
+<style>:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 14px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, "Segoe UI", sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --radius: var(--border-radius-lg, 12.5px);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17 17'%3E%3Cpath d='M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z'/%3E%3C/svg%3E");
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html > body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: 5px;
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium, 500);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive > .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align="right"]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align="center"]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: superellipse(1.5);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget > :not(.card, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress {
+  display: flex;
+  height: 6px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 6px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls > .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls > .form-label > :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type="file"] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type="file"]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type="file"]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type="color"] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: superellipse(1.5);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: "";
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type="radio"] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type="radio"]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: "";
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed="true"],
+  [aria-selected="true"],
+  .is-selected
+) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed="true"], [aria-selected="true"], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  .btn,
+  .form-control,
+  .form-select {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: max(16px, var(--font-size-normal));
+  }
+
+  .form-control[type="file"]::file-selector-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control-color[type="color"] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .form-control:is(
+    [type="date"],
+    [type="datetime-local"],
+    [type="month"],
+    [type="time"],
+    [type="week"]
+  ) {
+    min-width: 0;
+    max-width: 100%;
+    padding-block: 8px;
+  }
+
+  .form-check {
+    min-height: 44px;
+    padding-inline: 15px;
+  }
+
+  .form-check-input {
+    position: relative;
+  }
+
+  .form-check-input::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    content: "";
+    transform: translate(-50%, -50%);
+  }
+
+  .form-check-label {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .form-range {
+    height: 44px;
+    touch-action: pan-y;
+  }
+
+  .form-range::-webkit-slider-runnable-track {
+    height: 44px;
+  }
+
+  .form-range::-moz-range-track {
+    height: 44px;
+  }
+
+  .form-range::-webkit-slider-thumb {
+    margin-top: 12px;
+  }
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget > svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: 16px !important;
+  height: 16px !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html>body{padding:0}</style>
+</head>
+<body>
+<div id="reticle-bars-editor">
+  <h2>Hunt 準星 HUB 編輯器 v3｜2560×1440 原參數版</h2>
+
+  <div class="viz-controls">
+    <label class="form-label" for="bar-select">目前橫條
+      <select class="form-select" id="bar-select"></select>
+    </label>
+    <label class="form-label" for="bar-distance">距離（米）
+      <input class="form-control" id="bar-distance" type="number" min="1" max="999" inputmode="numeric" placeholder="輸入米數">
+    </label>
+    <label class="form-label" for="bar-y">上下位置 <output id="bar-y-output" class="tabular-nums"></output>
+      <input class="form-range" id="bar-y" type="range" min="724" max="1100" step="1">
+    </label>
+  </div>
+
+  <div class="viz-controls">
+    <button class="btn btn-primary" id="bar-add" type="button">新增橫條</button>
+    <button class="btn" id="bar-delete" type="button">刪除此橫條</button>
+    <button class="btn" id="bar-reset" type="button">重設準心</button>
+    <button class="btn" id="bar-download-svg" type="button">另存 SVG</button>
+    <button class="btn" id="bar-download-png" type="button">另存透明 PNG</button>
+  </div>
+
+  <h3>準星樣式與照片對照</h3>
+  <div class="viz-controls">
+    <label class="form-label" for="reticle-style">準星樣式
+      <select class="form-select" id="reticle-style">
+        <option value="lower-dot">下方刻度＋中心圓點</option>
+        <option value="sparks">Sparks 多橫條</option>
+        <option value="classic">經典十字</option>
+        <option value="t">T 型準星</option>
+        <option value="dot">中心點＋垂直尺</option>
+        <option value="chevron">V 型 Chevron</option>
+        <option value="bracket">框角式準星</option>
+      </select>
+    </label>
+    <label class="form-label" for="reticle-thickness">準星粗細 <output id="reticle-thickness-output" class="tabular-nums"></output>
+      <input class="form-range" id="reticle-thickness" type="range" min="0.5" max="6" step="0.1" value="1.5">
+    </label>
+    <label class="form-label" for="reticle-font-size">距離字體大小 <output id="reticle-font-size-output" class="tabular-nums"></output>
+      <input class="form-range" id="reticle-font-size" type="range" min="10" max="48" step="1" value="24">
+    </label>
+    <label class="form-label" for="reticle-color">準星線條顏色
+      <input class="form-control form-control-color" id="reticle-color" type="color" value="#b6ff3b" aria-label="準星線條顏色">
+    </label>
+    <label class="form-label" for="center-dot-size">中心圓點大小 <output id="center-dot-size-output" class="tabular-nums"></output>
+      <input class="form-range" id="center-dot-size" type="range" min="0.5" max="12" step="0.5" value="2">
+    </label>
+    <label class="form-label" for="center-dot-color">中心圓點顏色
+      <input class="form-control form-control-color" id="center-dot-color" type="color" value="#b6ff3b" aria-label="中心圓點顏色">
+    </label>
+  </div>
+
+  <div class="viz-controls">
+    <label class="form-label" for="reticle-scale">整體尺寸 <output id="reticle-scale-output" class="tabular-nums"></output>
+      <input class="form-range" id="reticle-scale" type="range" min="25" max="250" step="1" value="100">
+    </label>
+    <label class="form-label" for="reticle-offset-x">左右位置 <output id="reticle-offset-x-output" class="tabular-nums"></output>
+      <input class="form-range" id="reticle-offset-x" type="range" min="-600" max="600" step="1" value="0">
+    </label>
+    <label class="form-label" for="reticle-offset-y">上下位置 <output id="reticle-offset-y-output" class="tabular-nums"></output>
+      <input class="form-range" id="reticle-offset-y" type="range" min="-500" max="500" step="1" value="0">
+    </label>
+  </div>
+  <div class="text-small text-muted">編輯座標固定為 2560×1440，中心點 X=1280、Y=720。先上傳遊戲截圖，再用「整體尺寸／左右／上下」把準星疊到照片中的原準星上，就能照著照片複製相同尺寸與位置。</div>
+
+  <h3>人物測距儀設定</h3>
+  <div class="viz-controls">
+    <label class="form-label" for="rf-select">目前測距橫條
+      <select class="form-select" id="rf-select"></select>
+    </label>
+    <label class="form-label" for="rf-distance">距離（米）
+      <input class="form-control" id="rf-distance" type="number" min="1" max="999" inputmode="numeric" placeholder="輸入米數">
+    </label>
+    <label class="form-label" for="rf-y">上下位置 <output id="rf-y-output" class="tabular-nums"></output>
+      <input class="form-range" id="rf-y" type="range" min="460" max="710" step="1">
+    </label>
+  </div>
+
+  <div class="viz-controls">
+    <button class="btn btn-primary" id="rf-add" type="button">新增測距橫條</button>
+    <button class="btn" id="rf-delete" type="button">刪除此測距橫條</button>
+    <button class="btn" id="rf-reset" type="button">重設測距儀</button>
+  </div>
+
+  <div class="viz-controls">
+    <label class="form-label" for="rf-offset-x">測距儀左右位置 <output id="rf-offset-x-output" class="tabular-nums"></output>
+      <input class="form-range" id="rf-offset-x" type="range" min="-300" max="300" step="1" value="0">
+    </label>
+    <label class="form-label" for="rf-offset-y">測距儀上下位置 <output id="rf-offset-y-output" class="tabular-nums"></output>
+      <input class="form-range" id="rf-offset-y" type="range" min="-300" max="300" step="1" value="0">
+    </label>
+  </div>
+
+  <h3>背景參考照片</h3>
+  <div class="viz-controls">
+    <label class="form-label" for="bg-upload">上傳背景照片
+      <input class="form-control" id="bg-upload" type="file" accept="image/*">
+    </label>
+    <label class="form-label" for="bg-opacity">背景透明度 <output id="bg-opacity-output" class="tabular-nums"></output>
+      <input class="form-range" id="bg-opacity" type="range" min="0" max="100" step="1" value="45">
+    </label>
+  </div>
+
+  <div class="viz-controls">
+    <button class="btn" id="bg-clear" type="button">清除背景照片</button>
+    <button class="btn btn-primary" id="photo-calibrate" type="button">兩點校正照片準星</button>
+    <div class="text-small text-muted">背景照片只作為調整參考，不會被匯出到 SVG / PNG。校正時先點照片中的準星中心，再點準星右側最外緣。</div>
+  </div>
+
+  <h3>瞄準 HUB 預設</h3>
+  <div class="viz-controls">
+    <label class="form-label" for="hub-name">HUB 名稱
+      <input class="form-control" id="hub-name" type="text" maxlength="60" placeholder="例如：Sparks 200m 專用">
+    </label>
+    <label class="form-label" for="hub-gun-type">槍種
+      <select class="form-select" id="hub-gun-type">
+        <option value="步槍">步槍</option>
+        <option value="手槍">手槍</option>
+        <option value="霰彈槍">霰彈槍</option>
+        <option value="特殊武器">特殊武器</option>
+        <option value="其他">其他</option>
+      </select>
+    </label>
+    <label class="form-label" for="hub-weapon-name">武器名稱
+      <input class="form-control" id="hub-weapon-name" type="text" maxlength="60" placeholder="例如：Sparks LRR">
+    </label>
+  </div>
+  <div class="viz-controls">
+    <button class="btn btn-primary" id="hub-save" type="button">儲存目前 HUB</button>
+    <button class="btn" id="hub-export" type="button">匯出 HUB JSON</button>
+    <label class="btn" for="hub-import">匯入 HUB JSON</label>
+    <input id="hub-import" type="file" accept="application/json,.json" hidden>
+  </div>
+  <div id="hub-list" class="hub-list" aria-live="polite"></div>
+
+  <div class="card" id="bars-stage-wrap">
+    <svg id="bars-editor-stage" viewBox="0 0 2560 1440" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="bars-stage-title bars-stage-desc">
+      <title id="bars-stage-title">可新增、刪除與拖曳的準心橫條</title>
+      <desc id="bars-stage-desc">中央一百米準心固定。其他橫條可上下拖曳、輸入距離、個別刪除或新增。左側人物身高測距儀可獨立調整、增減橫條，也可以整體移動位置，並可上傳背景照片作為參考。</desc>
+      <rect class="editor-bg" x="0" y="0" width="2560" height="1440"></rect>
+      <image id="bars-background-image" x="0" y="0" width="2560" height="1440" preserveAspectRatio="xMidYMid slice" href="" visibility="hidden"></image>
+      <g class="scope-guides" aria-hidden="true">
+        <line x1="0" y1="720" x2="2560" y2="720"></line>
+        <line x1="1280" y1="0" x2="1280" y2="1440"></line>
+      </g>
+      <g id="bars-rangefinder-static"></g>
+      <g id="bars-static-reticle"></g>
+      <g id="bars-dynamic-reticle"></g>
+    </svg>
+  </div>
+
+  <div id="bars-status" class="text-small text-muted tabular-nums" aria-live="polite"></div>
+</div>
+
+<style>
+  #reticle-bars-editor {
+    display: grid;
+    gap: 12px;
+    width: 100%;
+  }
+  #reticle-bars-editor h2 {
+    margin: 0;
+  }
+  #reticle-bars-editor h3 {
+    margin: 4px 0 0;
+    font-size: 1rem;
+  }
+  #bars-stage-wrap {
+    overflow: hidden;
+    padding: 0;
+  }
+  #bars-editor-stage {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    touch-action: none;
+    user-select: none;
+  }
+  #bars-editor-stage .editor-bg {
+    fill: var(--card);
+  }
+  #bars-editor-stage .scope-guides {
+    stroke: var(--border);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+  #bars-editor-stage .preview-inner {
+    fill: none;
+    stroke: var(--reticle-color, #b6ff3b);
+    stroke-width: var(--reticle-inner-width, 1.5);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  #bars-editor-stage .center-dot {
+    fill: var(--center-dot-color, #b6ff3b);
+    stroke: none;
+  }
+  #bars-editor-stage .preview-label {
+    fill: var(--reticle-color, #b6ff3b);
+    stroke: none;
+    font-family: "Segoe UI", sans-serif;
+    font-size: var(--reticle-font-size, 24px);
+    font-weight: 500;
+  }
+  #bars-editor-stage [data-bar-id] {
+    cursor: ns-resize;
+  }
+  #bars-editor-stage .drag-hit {
+    fill: transparent;
+    pointer-events: all;
+  }
+  #bars-editor-stage .drag-handle {
+    fill: var(--ring);
+    stroke: var(--background);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+    pointer-events: none;
+  }
+  #bars-status {
+    min-height: 1.5em;
+  }
+  .hub-list { display:grid; gap:8px; }
+  .hub-item { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px; border:1px solid var(--border); border-radius:var(--radius-lg); }
+  .hub-item-main { flex:1 1 220px; min-width:0; }
+  .hub-item-title { font-weight:600; overflow-wrap:anywhere; }
+  .hub-item-meta { color:var(--muted-foreground); font-size:var(--font-size-small); }
+</style>
+
+<script>
+(() => {
+  const root = document.getElementById('reticle-bars-editor');
+  const stage = root.querySelector('#bars-editor-stage');
+  const stageWrap = root.querySelector('#bars-stage-wrap');
+  const rangefinderStatic = root.querySelector('#bars-rangefinder-static');
+  const staticReticle = root.querySelector('#bars-static-reticle');
+  const dynamicReticle = root.querySelector('#bars-dynamic-reticle');
+  const backgroundImage = root.querySelector('#bars-background-image');
+  const barSelect = root.querySelector('#bar-select');
+  const distanceInput = root.querySelector('#bar-distance');
+  const yRange = root.querySelector('#bar-y');
+  const yOutput = root.querySelector('#bar-y-output');
+  const status = root.querySelector('#bars-status');
+  const addButton = root.querySelector('#bar-add');
+  const deleteButton = root.querySelector('#bar-delete');
+  const resetButton = root.querySelector('#bar-reset');
+  const svgButton = root.querySelector('#bar-download-svg');
+  const pngButton = root.querySelector('#bar-download-png');
+
+  const rfSelect = root.querySelector('#rf-select');
+  const rfDistanceInput = root.querySelector('#rf-distance');
+  const rfYRange = root.querySelector('#rf-y');
+  const rfYOutput = root.querySelector('#rf-y-output');
+  const rfAddButton = root.querySelector('#rf-add');
+  const rfDeleteButton = root.querySelector('#rf-delete');
+  const rfResetButton = root.querySelector('#rf-reset');
+  const rfOffsetXRange = root.querySelector('#rf-offset-x');
+  const rfOffsetYRange = root.querySelector('#rf-offset-y');
+  const rfOffsetXOutput = root.querySelector('#rf-offset-x-output');
+  const rfOffsetYOutput = root.querySelector('#rf-offset-y-output');
+
+  const bgUploadInput = root.querySelector('#bg-upload');
+  const bgOpacityRange = root.querySelector('#bg-opacity');
+  const bgOpacityOutput = root.querySelector('#bg-opacity-output');
+  const bgClearButton = root.querySelector('#bg-clear');
+  const photoCalibrateButton = root.querySelector('#photo-calibrate');
+
+  const reticleStyleSelect = root.querySelector('#reticle-style');
+  const reticleThicknessRange = root.querySelector('#reticle-thickness');
+  const reticleThicknessOutput = root.querySelector('#reticle-thickness-output');
+  const reticleFontSizeRange = root.querySelector('#reticle-font-size');
+  const reticleFontSizeOutput = root.querySelector('#reticle-font-size-output');
+  const reticleColorInput = root.querySelector('#reticle-color');
+  const centerDotSizeRange = root.querySelector('#center-dot-size');
+  const centerDotSizeOutput = root.querySelector('#center-dot-size-output');
+  const centerDotColorInput = root.querySelector('#center-dot-color');
+  const reticleScaleRange = root.querySelector('#reticle-scale');
+  const reticleScaleOutput = root.querySelector('#reticle-scale-output');
+  const reticleOffsetXRange = root.querySelector('#reticle-offset-x');
+  const reticleOffsetYRange = root.querySelector('#reticle-offset-y');
+  const reticleOffsetXOutput = root.querySelector('#reticle-offset-x-output');
+  const reticleOffsetYOutput = root.querySelector('#reticle-offset-y-output');
+
+  const hubNameInput = root.querySelector('#hub-name');
+  const hubGunTypeSelect = root.querySelector('#hub-gun-type');
+  const hubWeaponNameInput = root.querySelector('#hub-weapon-name');
+  const hubSaveButton = root.querySelector('#hub-save');
+  const hubExportButton = root.querySelector('#hub-export');
+  const hubImportInput = root.querySelector('#hub-import');
+  const hubList = root.querySelector('#hub-list');
+
+  const initialBars = [
+    { id: 1, distance: '150', y: 752 },
+    { id: 2, distance: '170', y: 761 },
+    { id: 3, distance: '200', y: 773 },
+    { id: 4, distance: '', y: 792 },
+    { id: 5, distance: '', y: 814 },
+    { id: 6, distance: '', y: 837 },
+    { id: 7, distance: '330', y: 860 }
+  ];
+
+  const initialRangefinder = {
+    offsetX: 0,
+    offsetY: 0,
+    marks: [
+      { id: 1, distance: '100', y: 500 },
+      { id: 2, distance: '150', y: 573.333 },
+      { id: 3, distance: '170', y: 590.587 },
+      { id: 4, distance: '200', y: 610 },
+      { id: 5, distance: '330', y: 653.333 }
+    ]
+  };
+
+  let bars = cloneInitial();
+  let selectedId = 1;
+  let nextId = 8;
+  let dragging = null;
+
+  let rangefinder = cloneRangefinderInitial();
+  let selectedRfId = 1;
+  let nextRfId = 6;
+  let backgroundState = { href: '', opacity: 0.45 };
+  let reticleStyle = 'lower-dot';
+  let reticleAppearance = { thickness: 1.5, fontSize: 24, color: '#b6ff3b', dotSize: 2, dotColor: '#b6ff3b' };
+  let reticleTransform = { scale: 1, offsetX: 0, offsetY: 0 };
+  const HUB_STORAGE_KEY = 'hunt-reticle-hub-presets-v2';
+  let photoCalibration = null;
+
+  function cloneInitial() {
+    return initialBars.map(bar => ({ ...bar }));
+  }
+
+  function cloneRangefinderInitial() {
+    return {
+      offsetX: initialRangefinder.offsetX,
+      offsetY: initialRangefinder.offsetY,
+      marks: initialRangefinder.marks.map(mark => ({ ...mark }))
+    };
+  }
+
+  function linePair(x1, y1, x2, y2) {
+    return `<line class="preview-inner" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"></line>`;
+  }
+
+  function pathPair(d) {
+    return `<path class="preview-inner" d="${d}"></path>`;
+  }
+
+  function circlePair(cx, cy, r) {
+    return `<circle class="preview-inner" cx="${cx}" cy="${cy}" r="${r}"></circle>`;
+  }
+
+  function centerDotMarkup() {
+    const diameter = Math.max(0.5, Number(reticleAppearance.dotSize) || 2);
+    return `<circle class="center-dot" cx="1280" cy="720" r="${diameter / 2}"></circle>`;
+  }
+
+  function reticleShapeMarkup(lastY) {
+    switch (reticleStyle) {
+      case 'lower-dot': return pathPair(`M1280 724V${lastY}`);
+      case 'classic': return pathPair(`M1200 720H1268 M1292 720H1360 M1280 640V708 M1280 732V${lastY}`);
+      case 't': return pathPair(`M1200 720H1268 M1292 720H1360 M1280 732V${lastY}`);
+      case 'dot': return circlePair(1280, 720, 5) + pathPair(`M1280 736V${lastY}`);
+      case 'chevron': return pathPair(`M1248 736L1280 704L1312 736 M1280 736V${lastY}`);
+      case 'bracket': return pathPair(`M1215 690V720H1250 M1345 690V720H1310 M1280 738V${lastY}`);
+      default: return pathPair(`M1224 720H1273.333 M1286.667 720H1336 M1280 664V713.333 M1280 726.667V${lastY}`);
+    }
+  }
+
+  function reticleTransformValue() {
+    return `translate(${reticleTransform.offsetX} ${reticleTransform.offsetY}) translate(1280 720) scale(${reticleTransform.scale}) translate(-1280 -720)`;
+  }
+
+  function selectedBar() {
+    return bars.find(bar => bar.id === selectedId) || null;
+  }
+
+  function selectedRangefinderMark() {
+    return rangefinder.marks.find(mark => mark.id === selectedRfId) || null;
+  }
+
+  function displayName(bar, index) {
+    return bar.distance ? `${bar.distance} 米` : `橫條 ${index + 1}（未標示）`;
+  }
+
+  function displayRangefinderName(mark, index) {
+    return mark.distance ? `${mark.distance} 米` : `測距橫條 ${index + 1}（未標示）`;
+  }
+
+  function makeOptions() {
+    if (!bars.length) {
+      barSelect.innerHTML = '<option value="">沒有橫條</option>';
+      barSelect.disabled = true;
+      return;
+    }
+    barSelect.disabled = false;
+    barSelect.innerHTML = bars.map((bar, index) => `<option value="${bar.id}">${displayName(bar, index)}</option>`).join('');
+    barSelect.value = String(selectedId);
+  }
+
+  function makeRangefinderOptions() {
+    if (!rangefinder.marks.length) {
+      rfSelect.innerHTML = '<option value="">沒有測距橫條</option>';
+      rfSelect.disabled = true;
+      return;
+    }
+    rfSelect.disabled = false;
+    rfSelect.innerHTML = rangefinder.marks.map((mark, index) => `<option value="${mark.id}">${displayRangefinderName(mark, index)}</option>`).join('');
+    rfSelect.value = String(selectedRfId);
+  }
+
+  function render() {
+    if (backgroundState.href) {
+      backgroundImage.setAttributeNS('http://www.w3.org/1999/xlink', 'href', backgroundState.href);
+      backgroundImage.setAttribute('href', backgroundState.href);
+      backgroundImage.setAttribute('visibility', 'visible');
+      backgroundImage.style.opacity = String(backgroundState.opacity);
+    } else {
+      backgroundImage.setAttribute('visibility', 'hidden');
+      backgroundImage.removeAttribute('href');
+      backgroundImage.removeAttributeNS('http://www.w3.org/1999/xlink', 'href');
+    }
+
+    stage.style.setProperty('--reticle-inner-width', `${reticleAppearance.thickness}px`);
+    stage.style.setProperty('--reticle-color', reticleAppearance.color || '#b6ff3b');
+    stage.style.setProperty('--center-dot-color', reticleAppearance.dotColor || '#b6ff3b');
+    stage.style.setProperty('--reticle-font-size', `${reticleAppearance.fontSize}px`);
+
+    const rangefinderTransform = `translate(${rangefinder.offsetX} ${rangefinder.offsetY})`;
+    const rangefinderMarksMarkup = rangefinder.marks.map(mark => {
+      const isActive = mark.id === selectedRfId;
+      const label = mark.distance ? `<text class="preview-label" x="${mark.y === 500 ? 928 : 933.333}" y="${mark.y + 6}">${mark.distance}</text>` : '';
+      const halfWidth = mark.y === 500 ? 24 : 18.667;
+      return `<g data-rf-id="${mark.id}" aria-label="${mark.distance ? `${mark.distance} 米` : '未標示'}測距橫條，Y ${Math.round(mark.y)}">
+        <rect class="drag-hit" x="915" y="${mark.y - 18}" width="140" height="36"></rect>
+        ${linePair(1000 - halfWidth, mark.y, 1000 + halfWidth, mark.y)}
+        ${label}
+        ${isActive ? `<circle class="drag-handle" cx="${1000 + halfWidth}" cy="${mark.y}" r="8"></circle>` : ''}
+      </g>`;
+    }).join('');
+
+    rangefinderStatic.innerHTML = `<g transform="${rangefinderTransform}">${pathPair('M1000 500V720 M968 720H1032')}${rangefinderMarksMarkup}</g>`;
+
+    const lastY = bars.length ? Math.max(...bars.map(bar => bar.y)) : 726.667;
+    const mainTransform = reticleTransformValue();
+    staticReticle.setAttribute('transform', mainTransform);
+    dynamicReticle.setAttribute('transform', mainTransform);
+    staticReticle.innerHTML =
+      reticleShapeMarkup(lastY) +
+      (reticleStyle === 'lower-dot' ? centerDotMarkup() : '') +
+      (reticleStyle === 'lower-dot' ? '' : '<text class="preview-label" x="1188" y="708">100</text>');
+
+    dynamicReticle.innerHTML = bars.map((bar, index) => {
+      const active = bar.id === selectedId;
+      const labelX = index % 2 === 0 ? 1315 : 1212;
+      const label = bar.distance ? `<text class="preview-label" x="${labelX}" y="${bar.y + 6}">${bar.distance}</text>` : '';
+      return `<g data-bar-id="${bar.id}" aria-label="${bar.distance ? `${bar.distance} 米` : '未標示'}橫條，Y ${Math.round(bar.y)}">
+        <rect class="drag-hit" x="1230" y="${bar.y - 27}" width="180" height="54"></rect>
+        ${linePair(1260, bar.y, 1300, bar.y)}
+        ${label}
+        ${active ? `<circle class="drag-handle" cx="1300" cy="${bar.y}" r="8"></circle>` : ''}
+      </g>`;
+    }).join('');
+
+    const bar = selectedBar();
+    const disabled = !bar;
+    distanceInput.disabled = disabled;
+    yRange.disabled = disabled;
+    deleteButton.disabled = disabled;
+    if (bar) {
+      barSelect.value = String(bar.id);
+      distanceInput.value = bar.distance;
+      yRange.value = String(Math.round(bar.y));
+      yOutput.value = `${Math.round(bar.y)} px`;
+    } else {
+      distanceInput.value = '';
+      yOutput.value = '';
+    }
+
+    const rfMark = selectedRangefinderMark();
+    const rfDisabled = !rfMark;
+    rfDistanceInput.disabled = rfDisabled;
+    rfYRange.disabled = rfDisabled;
+    rfDeleteButton.disabled = rfDisabled;
+    if (rfMark) {
+      rfSelect.value = String(rfMark.id);
+      rfDistanceInput.value = rfMark.distance;
+      rfYRange.value = String(Math.round(rfMark.y));
+      rfYOutput.value = `${Math.round(rfMark.y)} px`;
+    } else {
+      rfDistanceInput.value = '';
+      rfYOutput.value = '';
+    }
+
+    rfOffsetXRange.value = String(Math.round(rangefinder.offsetX));
+    rfOffsetYRange.value = String(Math.round(rangefinder.offsetY));
+    rfOffsetXOutput.value = `${Math.round(rangefinder.offsetX)} px`;
+    rfOffsetYOutput.value = `${Math.round(rangefinder.offsetY)} px`;
+
+    bgOpacityRange.value = String(Math.round(backgroundState.opacity * 100));
+    bgOpacityOutput.value = `${Math.round(backgroundState.opacity * 100)}%`;
+
+    reticleStyleSelect.value = reticleStyle;
+    reticleThicknessRange.value = String(reticleAppearance.thickness);
+    reticleThicknessOutput.value = `${reticleAppearance.thickness.toFixed(1)} px`;
+    reticleFontSizeRange.value = String(reticleAppearance.fontSize);
+    reticleFontSizeOutput.value = `${Math.round(reticleAppearance.fontSize)} px`;
+    reticleColorInput.value = /^#[0-9a-fA-F]{6}$/.test(reticleAppearance.color || '') ? reticleAppearance.color : '#b6ff3b';
+    centerDotSizeRange.value = String(Number(reticleAppearance.dotSize) || 2);
+    centerDotSizeOutput.value = `${(Number(reticleAppearance.dotSize) || 2).toFixed(1)} px`;
+    centerDotColorInput.value = /^#[0-9a-fA-F]{6}$/.test(reticleAppearance.dotColor || '') ? reticleAppearance.dotColor : '#b6ff3b';
+    reticleScaleRange.value = String(Math.round(reticleTransform.scale * 100));
+    reticleScaleOutput.value = `${Math.round(reticleTransform.scale * 100)}%`;
+    reticleOffsetXRange.value = String(Math.round(reticleTransform.offsetX));
+    reticleOffsetYRange.value = String(Math.round(reticleTransform.offsetY));
+    reticleOffsetXOutput.value = `${Math.round(reticleTransform.offsetX)} px`;
+    reticleOffsetYOutput.value = `${Math.round(reticleTransform.offsetY)} px`;
+
+    const barText = bar ? `${bar.distance ? `${bar.distance} 米` : '未標示橫條'}｜中心線下方 ${Math.round(bar.y - 720)} px` : '目前沒有可調整的準心橫條';
+    const rfText = rfMark ? `${rfMark.distance ? `${rfMark.distance} 米` : '未標示測距橫條'}｜測距儀內 Y ${Math.round(rfMark.y)} px｜整體偏移 X ${Math.round(rangefinder.offsetX)} / Y ${Math.round(rangefinder.offsetY)}` : '目前沒有可調整的測距橫條';
+    status.textContent = `2560×1440｜中心 X1280 / Y720 ｜ ${barText} ｜ ${rfText}`;
+  }
+
+  function selectBar(id) {
+    selectedId = Number(id);
+    render();
+  }
+
+  function selectRangefinderMark(id) {
+    selectedRfId = Number(id);
+    render();
+  }
+
+  function setSelectedY(value) {
+    const bar = selectedBar();
+    if (!bar) return;
+    bar.y = Math.max(724, Math.min(1100, Number(value)));
+    render();
+  }
+
+  function setSelectedRangefinderY(value) {
+    const mark = selectedRangefinderMark();
+    if (!mark) return;
+    mark.y = Math.max(460, Math.min(710, Number(value)));
+    render();
+  }
+
+  function svgPoint(event) {
+    const point = stage.createSVGPoint();
+    point.x = event.clientX;
+    point.y = event.clientY;
+    return point.matrixTransform(stage.getScreenCTM().inverse());
+  }
+
+  function addBar() {
+    const greatestY = bars.length ? Math.max(...bars.map(bar => bar.y)) : 740;
+    const bar = { id: nextId++, distance: '', y: Math.min(1100, greatestY + 22) };
+    bars.push(bar);
+    selectedId = bar.id;
+    makeOptions();
+    render();
+    distanceInput.focus();
+  }
+
+  function addRangefinderMark() {
+    const greatestY = rangefinder.marks.length ? Math.max(...rangefinder.marks.map(mark => mark.y)) : 560;
+    const mark = { id: nextRfId++, distance: '', y: Math.min(710, greatestY + 22) };
+    rangefinder.marks.push(mark);
+    selectedRfId = mark.id;
+    makeRangefinderOptions();
+    render();
+    rfDistanceInput.focus();
+  }
+
+  function deleteSelectedBar() {
+    const index = bars.findIndex(bar => bar.id === selectedId);
+    if (index < 0) return;
+    bars.splice(index, 1);
+    if (bars.length) selectedId = bars[Math.min(index, bars.length - 1)].id;
+    makeOptions();
+    render();
+  }
+
+  function deleteSelectedRangefinderMark() {
+    const index = rangefinder.marks.findIndex(mark => mark.id === selectedRfId);
+    if (index < 0) return;
+    rangefinder.marks.splice(index, 1);
+    if (rangefinder.marks.length) selectedRfId = rangefinder.marks[Math.min(index, rangefinder.marks.length - 1)].id;
+    makeRangefinderOptions();
+    render();
+  }
+
+  function exportLine(x1, y1, x2, y2) {
+    return `<line class="inner" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+  }
+
+  function exportPath(d) {
+    return `<path class="inner" d="${d}"/>`;
+  }
+
+  function exportCircle(cx, cy, r) {
+    return `<circle class="inner" cx="${cx}" cy="${cy}" r="${r}"/>`;
+  }
+
+  function exportReticleShape(lastY) {
+    switch (reticleStyle) {
+      case 'lower-dot': return exportPath(`M1280 724V${lastY}`);
+      case 'classic': return exportPath(`M1200 720H1268 M1292 720H1360 M1280 640V708 M1280 732V${lastY}`);
+      case 't': return exportPath(`M1200 720H1268 M1292 720H1360 M1280 732V${lastY}`);
+      case 'dot': return exportCircle(1280, 720, 5) + exportPath(`M1280 736V${lastY}`);
+      case 'chevron': return exportPath(`M1248 736L1280 704L1312 736 M1280 736V${lastY}`);
+      case 'bracket': return exportPath(`M1215 690V720H1250 M1345 690V720H1310 M1280 738V${lastY}`);
+      default: return exportPath(`M1224 720H1273.333 M1286.667 720H1336 M1280 664V713.333 M1280 726.667V${lastY}`);
+    }
+  }
+
+  function buildExportSvg() {
+    const lastY = bars.length ? Math.max(...bars.map(bar => bar.y)) : 726.667;
+    const barMarkup = bars.map((bar, index) => {
+      const labelX = index % 2 === 0 ? 1315 : 1212;
+      const label = bar.distance ? `<text class="label" x="${labelX}" y="${bar.y + 5.333}">${bar.distance}</text>` : '';
+      return `<g id="bar-${index + 1}" data-distance="${bar.distance}">${exportLine(1260, bar.y, 1300, bar.y)}${label}</g>`;
+    }).join('');
+    const rangefinderMarksMarkup = rangefinder.marks.map((mark, index) => {
+      const labelX = mark.y === 500 ? 928 : 933.333;
+      const halfWidth = mark.y === 500 ? 24 : 18.667;
+      const label = mark.distance ? `<text class="label" x="${labelX}" y="${mark.y + 5.333}">${mark.distance}</text>` : '';
+      return `<g id="rangefinder-bar-${index + 1}" data-distance="${mark.distance}">${exportLine(1000 - halfWidth, mark.y, 1000 + halfWidth, mark.y)}${label}</g>`;
+    }).join('');
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2560" height="1440" viewBox="0 0 2560 1440">
+<title>Custom multi-bar Hunt Sparks reticle</title>
+<defs><style>.inner{fill:none;stroke:${/^#[0-9a-fA-F]{6}$/.test(reticleAppearance.color || '') ? reticleAppearance.color : '#b6ff3b'};stroke-width:${reticleAppearance.thickness};stroke-linecap:round;stroke-linejoin:round}.dot{fill:${/^#[0-9a-fA-F]{6}$/.test(reticleAppearance.dotColor || '') ? reticleAppearance.dotColor : '#b6ff3b'};stroke:none}.label{fill:${/^#[0-9a-fA-F]{6}$/.test(reticleAppearance.color || '') ? reticleAppearance.color : '#b6ff3b'};stroke:none;font-family:"Segoe UI",sans-serif;font-size:${reticleAppearance.fontSize}px;font-weight:700}</style></defs>
+<g id="vertical-rangefinder" transform="translate(${rangefinder.offsetX} ${rangefinder.offsetY})">${exportPath('M1000 500V720 M968 720H1032')}${rangefinderMarksMarkup}</g>
+<g id="reticle" transform="${reticleTransformValue()}">${exportReticleShape(lastY)}${reticleStyle === 'lower-dot' ? `<circle class="dot" cx="1280" cy="720" r="${Math.max(0.5, Number(reticleAppearance.dotSize) || 2) / 2}"/>` : ''}${reticleStyle === 'lower-dot' ? '' : '<text class="label" x="1194.667" y="708">100</text>'}${barMarkup}</g>
+</svg>`;
+  }
+
+  function getHubPresets() {
+    try {
+      const raw = localStorage.getItem(HUB_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (_) { return []; }
+  }
+
+  function setHubPresets(items) {
+    try { localStorage.setItem(HUB_STORAGE_KEY, JSON.stringify(items)); } catch (_) {}
+  }
+
+  function currentHubSnapshot() {
+    return {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      name: hubNameInput.value.trim() || '未命名 HUB',
+      gunType: hubGunTypeSelect.value,
+      weaponName: hubWeaponNameInput.value.trim(),
+      createdAt: new Date().toISOString(),
+      reticleStyle,
+      reticleAppearance: { ...reticleAppearance },
+      reticleTransform: { ...reticleTransform },
+      bars: bars.map(item => ({ ...item })),
+      rangefinder: { offsetX: rangefinder.offsetX, offsetY: rangefinder.offsetY, marks: rangefinder.marks.map(item => ({ ...item })) }
+    };
+  }
+
+  function applyHubPreset(preset) {
+    if (!preset || typeof preset !== 'object') return;
+    reticleStyle = preset.reticleStyle || 'lower-dot';
+    reticleAppearance = {
+      thickness: Number(preset.reticleAppearance?.thickness) || 1.5,
+      fontSize: Number(preset.reticleAppearance?.fontSize) || 24,
+      color: /^#[0-9a-fA-F]{6}$/.test(preset.reticleAppearance?.color || '') ? preset.reticleAppearance.color : '#b6ff3b',
+      dotSize: Math.max(0.5, Number(preset.reticleAppearance?.dotSize) || 2),
+      dotColor: /^#[0-9a-fA-F]{6}$/.test(preset.reticleAppearance?.dotColor || '') ? preset.reticleAppearance.dotColor : '#b6ff3b'
+    };
+    reticleTransform = { scale: Number(preset.reticleTransform?.scale) || 1, offsetX: Number(preset.reticleTransform?.offsetX) || 0, offsetY: Number(preset.reticleTransform?.offsetY) || 0 };
+    if (Array.isArray(preset.bars)) bars = preset.bars.map(item => ({ ...item }));
+    if (preset.rangefinder?.marks && Array.isArray(preset.rangefinder.marks)) rangefinder = { offsetX: Number(preset.rangefinder.offsetX) || 0, offsetY: Number(preset.rangefinder.offsetY) || 0, marks: preset.rangefinder.marks.map(item => ({ ...item })) };
+    nextId = Math.max(0, ...bars.map(item => Number(item.id) || 0)) + 1;
+    nextRfId = Math.max(0, ...rangefinder.marks.map(item => Number(item.id) || 0)) + 1;
+    selectedId = bars[0]?.id ?? 0;
+    selectedRfId = rangefinder.marks[0]?.id ?? 0;
+    hubNameInput.value = preset.name || '';
+    hubGunTypeSelect.value = preset.gunType || '其他';
+    hubWeaponNameInput.value = preset.weaponName || '';
+    makeOptions(); makeRangefinderOptions(); render();
+  }
+
+  function renderHubList() {
+    const items = getHubPresets();
+    hubList.replaceChildren();
+    if (!items.length) {
+      const empty = document.createElement('div'); empty.className = 'text-small text-muted'; empty.textContent = '目前還沒有儲存的 HUB。'; hubList.appendChild(empty); return;
+    }
+    items.forEach(item => {
+      const row = document.createElement('div'); row.className = 'hub-item';
+      const main = document.createElement('div'); main.className = 'hub-item-main';
+      const title = document.createElement('div'); title.className = 'hub-item-title'; title.textContent = item.name || '未命名 HUB';
+      const meta = document.createElement('div'); meta.className = 'hub-item-meta'; meta.textContent = `${item.gunType || '未分類'}${item.weaponName ? `｜${item.weaponName}` : ''}｜${item.reticleStyle || 'sparks'}`;
+      main.append(title, meta);
+      const load = document.createElement('button'); load.type = 'button'; load.className = 'btn'; load.textContent = '載入'; load.addEventListener('click', () => applyHubPreset(item));
+      const del = document.createElement('button'); del.type = 'button'; del.className = 'btn'; del.textContent = '刪除'; del.addEventListener('click', () => { setHubPresets(getHubPresets().filter(x => x.id !== item.id)); renderHubList(); });
+      row.append(main, load, del); hubList.appendChild(row);
+    });
+  }
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  async function chooseSaveHandle(suggestedName, description, mimeType, extension) {
+    if (typeof window.showSaveFilePicker === 'function') {
+      try {
+        return await window.showSaveFilePicker({
+          suggestedName,
+          types: [{ description, accept: { [mimeType]: [extension] } }]
+        });
+      } catch (error) {
+        if (error && error.name === 'AbortError') return false;
+      }
+    }
+    const enteredName = window.prompt('請輸入檔案名稱', suggestedName);
+    if (enteredName === null) return false;
+    const fallbackName = enteredName.toLowerCase().endsWith(extension) ? enteredName : `${enteredName}${extension}`;
+    return { fallbackName };
+  }
+
+  async function saveBlob(blob, handle, fallbackName) {
+    if (handle === false) return;
+    if (handle && handle.fallbackName) {
+      downloadBlob(blob, handle.fallbackName);
+      return;
+    }
+    if (handle) {
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return;
+    }
+    downloadBlob(blob, fallbackName);
+  }
+
+  async function downloadSvg() {
+    const filename = 'Hunt-Sparks-custom-bars-2560x1440.svg';
+    const handle = await chooseSaveHandle(filename, 'SVG 準心', 'image/svg+xml', '.svg');
+    const blob = new Blob([buildExportSvg()], { type: 'image/svg+xml;charset=utf-8' });
+    await saveBlob(blob, handle, filename);
+  }
+
+  async function downloadPng() {
+    const filename = 'Hunt-Sparks-custom-bars-2560x1440.png';
+    const handle = await chooseSaveHandle(filename, '透明 PNG 準心', 'image/png', '.png');
+    if (handle === false) return;
+    const svgBlob = new Blob([buildExportSvg()], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+    const image = new Image();
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 2560;
+      canvas.height = 1440;
+      const context = canvas.getContext('2d');
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(image, 0, 0);
+      canvas.toBlob(async blob => {
+        if (blob) await saveBlob(blob, handle, filename);
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    };
+    image.onerror = () => URL.revokeObjectURL(url);
+    image.src = url;
+  }
+
+  stage.addEventListener('pointerdown', event => {
+    if (photoCalibration) {
+      const point = svgPoint(event);
+      if (photoCalibration.step === 1) {
+        photoCalibration.center = { x: point.x, y: point.y };
+        photoCalibration.step = 2;
+        status.textContent = '校正第 2 步：請點照片中準星右側最外緣';
+      } else {
+        const dx = point.x - photoCalibration.center.x;
+        const dy = point.y - photoCalibration.center.y;
+        const distance = Math.max(1, Math.hypot(dx, dy));
+        const baseRadius = reticleStyle === 'classic' || reticleStyle === 't' ? 80 : reticleStyle === 'chevron' ? 45 : reticleStyle === 'bracket' ? 65 : 56;
+        reticleTransform.scale = Math.max(0.25, Math.min(2.5, distance / baseRadius));
+        reticleTransform.offsetX = Math.max(-600, Math.min(600, photoCalibration.center.x - 1280));
+        reticleTransform.offsetY = Math.max(-500, Math.min(500, photoCalibration.center.y - 720));
+        photoCalibration = null;
+        photoCalibrateButton.textContent = '兩點校正照片準星';
+        render();
+        status.textContent = '照片校正完成：已套用準星中心位置與整體尺寸，可再用滑桿微調。';
+      }
+      event.preventDefault();
+      return;
+    }
+    const rangefinderGroup = event.target.closest('[data-rf-id]');
+    if (rangefinderGroup) {
+      const id = Number(rangefinderGroup.dataset.rfId);
+      selectRangefinderMark(id);
+      const mark = selectedRangefinderMark();
+      const point = svgPoint(event);
+      dragging = { pointerId: event.pointerId, type: 'rf', offsetY: mark.y - (point.y - rangefinder.offsetY) };
+      stage.setPointerCapture(event.pointerId);
+      event.preventDefault();
+      return;
+    }
+    const group = event.target.closest('[data-bar-id]');
+    if (!group) return;
+    const id = Number(group.dataset.barId);
+    selectBar(id);
+    const bar = selectedBar();
+    const point = svgPoint(event);
+    dragging = { pointerId: event.pointerId, type: 'bar', offsetY: bar.y - point.y };
+    stage.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  });
+
+  stage.addEventListener('pointermove', event => {
+    if (!dragging || dragging.pointerId !== event.pointerId) return;
+    const point = svgPoint(event);
+    if (dragging.type === 'rf') {
+      setSelectedRangefinderY(point.y - rangefinder.offsetY + dragging.offsetY);
+    } else {
+      setSelectedY(point.y + dragging.offsetY);
+    }
+    event.preventDefault();
+  });
+
+  function endDrag(event) {
+    if (!dragging || dragging.pointerId !== event.pointerId) return;
+    if (stage.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
+    dragging = null;
+  }
+
+  stage.addEventListener('pointerup', endDrag);
+  stage.addEventListener('pointercancel', endDrag);
+
+  barSelect.addEventListener('change', () => selectBar(barSelect.value));
+  distanceInput.addEventListener('input', () => {
+    const bar = selectedBar();
+    if (!bar) return;
+    bar.distance = distanceInput.value.replace(/[^0-9]/g, '').slice(0, 3);
+    makeOptions();
+    render();
+    distanceInput.focus();
+  });
+  yRange.addEventListener('input', () => setSelectedY(yRange.value));
+  addButton.addEventListener('click', addBar);
+  deleteButton.addEventListener('click', deleteSelectedBar);
+  resetButton.addEventListener('click', () => {
+    bars = cloneInitial();
+    selectedId = 1;
+    nextId = 8;
+    makeOptions();
+    render();
+  });
+
+  rfSelect.addEventListener('change', () => selectRangefinderMark(rfSelect.value));
+  rfDistanceInput.addEventListener('input', () => {
+    const mark = selectedRangefinderMark();
+    if (!mark) return;
+    mark.distance = rfDistanceInput.value.replace(/[^0-9]/g, '').slice(0, 3);
+    makeRangefinderOptions();
+    render();
+    rfDistanceInput.focus();
+  });
+  rfYRange.addEventListener('input', () => setSelectedRangefinderY(rfYRange.value));
+  rfAddButton.addEventListener('click', addRangefinderMark);
+  rfDeleteButton.addEventListener('click', deleteSelectedRangefinderMark);
+  rfResetButton.addEventListener('click', () => {
+    rangefinder = cloneRangefinderInitial();
+    selectedRfId = 1;
+    nextRfId = 6;
+    makeRangefinderOptions();
+    render();
+  });
+  rfOffsetXRange.addEventListener('input', () => {
+    rangefinder.offsetX = Number(rfOffsetXRange.value);
+    render();
+  });
+  rfOffsetYRange.addEventListener('input', () => {
+    rangefinder.offsetY = Number(rfOffsetYRange.value);
+    render();
+  });
+
+  reticleStyleSelect.addEventListener('change', () => { reticleStyle = reticleStyleSelect.value; render(); });
+  reticleThicknessRange.addEventListener('input', () => { reticleAppearance.thickness = Math.max(0.5, Math.min(6, Number(reticleThicknessRange.value) || 1.5)); render(); });
+  reticleFontSizeRange.addEventListener('input', () => { reticleAppearance.fontSize = Math.max(10, Math.min(48, Number(reticleFontSizeRange.value) || 24)); render(); });
+  reticleColorInput.addEventListener('input', () => { reticleAppearance.color = reticleColorInput.value; render(); });
+  centerDotSizeRange.addEventListener('input', () => { reticleAppearance.dotSize = Math.max(0.5, Math.min(12, Number(centerDotSizeRange.value) || 2)); render(); });
+  centerDotColorInput.addEventListener('input', () => { reticleAppearance.dotColor = centerDotColorInput.value; render(); });
+  reticleScaleRange.addEventListener('input', () => { reticleTransform.scale = Math.max(0.25, Math.min(2.5, Number(reticleScaleRange.value) / 100 || 1)); render(); });
+  reticleOffsetXRange.addEventListener('input', () => { reticleTransform.offsetX = Number(reticleOffsetXRange.value) || 0; render(); });
+  reticleOffsetYRange.addEventListener('input', () => { reticleTransform.offsetY = Number(reticleOffsetYRange.value) || 0; render(); });
+
+  hubSaveButton.addEventListener('click', () => {
+    const items = getHubPresets(); items.unshift(currentHubSnapshot()); setHubPresets(items.slice(0, 100)); renderHubList();
+  });
+  hubExportButton.addEventListener('click', () => {
+    const payload = { version: 2, exportedAt: new Date().toISOString(), presets: getHubPresets() };
+    downloadBlob(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }), 'Hunt-Reticle-HUB-presets.json');
+  });
+  hubImportInput.addEventListener('change', event => {
+    const file = event.target.files?.[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(String(reader.result || '{}'));
+        const incoming = Array.isArray(parsed) ? parsed : parsed.presets;
+        if (!Array.isArray(incoming)) throw new Error('格式錯誤');
+        const merged = [...incoming.filter(x => x && typeof x === 'object'), ...getHubPresets()];
+        setHubPresets(merged.slice(0, 100)); renderHubList(); status.textContent = `已匯入 ${incoming.length} 個 HUB 預設`;
+      } catch (_) { status.textContent = 'HUB JSON 格式無法讀取'; }
+      hubImportInput.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  photoCalibrateButton.addEventListener('click', () => {
+    if (!backgroundState.href) {
+      status.textContent = '請先上傳一張遊戲截圖，再使用兩點校正。';
+      return;
+    }
+    if (photoCalibration) {
+      photoCalibration = null;
+      photoCalibrateButton.textContent = '兩點校正照片準星';
+      status.textContent = '已取消照片準星校正。';
+      return;
+    }
+    photoCalibration = { step: 1, center: null };
+    photoCalibrateButton.textContent = '取消照片校正';
+    status.textContent = '校正第 1 步：請點照片中原準星的中心點';
+  });
+
+  bgUploadInput.addEventListener('change', event => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      backgroundState.href = String(reader.result || '');
+      render();
+    };
+    reader.readAsDataURL(file);
+  });
+  bgOpacityRange.addEventListener('input', () => {
+    backgroundState.opacity = Number(bgOpacityRange.value) / 100;
+    render();
+  });
+  bgClearButton.addEventListener('click', () => {
+    backgroundState.href = '';
+    photoCalibration = null;
+    photoCalibrateButton.textContent = '兩點校正照片準星';
+    bgUploadInput.value = '';
+    render();
+  });
+
+  svgButton.addEventListener('click', downloadSvg);
+  pngButton.addEventListener('click', downloadPng);
+
+  const resizeObserver = new ResizeObserver(entries => {
+    const width = entries[0].contentRect.width;
+    stage.setAttribute('viewBox', width <= 480 ? '880 450 720 540' : '860 450 800 600');
+  });
+  resizeObserver.observe(stageWrap);
+
+  makeOptions();
+  makeRangefinderOptions();
+  renderHubList();
+  render();
+})();
+</script>
+
+
+</body>
+</html>
